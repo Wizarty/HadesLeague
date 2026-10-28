@@ -399,6 +399,12 @@ let enemies = [],
   lastTime = performance.now(),
   toastTime = 0;
 let save = loadSave(localStorage);
+let cameraYaw = Math.atan2(21, 23),
+  cameraPitch = Math.atan2(27, Math.hypot(21, 23)),
+  cameraDistance = Math.hypot(21, 27, 23),
+  cameraDragging = false,
+  dragX = 0,
+  dragY = 0;
 const keys = new Set(),
   pointer = new THREE.Vector2(),
   ray = new THREE.Raycaster(),
@@ -441,6 +447,7 @@ function modal(html) {
   $("#modal-content").innerHTML = html;
   $("#modal").hidden = false;
   mouseDown = false;
+  cameraDragging = false;
   keys.clear();
 }
 function hideModal() {
@@ -455,7 +462,7 @@ function selectScreen() {
     )
       .map(
         ([id, c]) =>
-          `<button class="card ${id === selected ? "selected" : ""}" data-champ="${id}" style="--accent:#${c.color.toString(16)}"><div class="champ-sigil">${c.sigil}</div><div class="role">${c.title}</div><h3>${c.name}</h3><p>${c.description}</p><div class="kit"><b>P</b>${c.passive}<br>${c.skills.map((s, i) => `<b>${"QWER"[i]}</b>${s}`).join("<br>")}</div><div class="card-bottom">${c.role}</div></button>`,
+          `<button class="card ${id === selected ? "selected" : ""}" data-champ="${id}" style="--accent:#${c.color.toString(16)}"><div class="champ-sigil">${c.sigil}</div><div class="role">${c.title}</div><h3>${c.name}</h3><p>${c.description}</p><div class="kit"><b>P</b>${c.passive}<br>${c.skills.map((s, i) => `<b>${i + 1}</b>${s}`).join("<br>")}</div><div class="card-bottom">${c.role}</div></button>`,
       )
       .join(
         "",
@@ -495,7 +502,7 @@ function help() {
   const prev = state;
   if (state === "playing") state = "paused";
   modal(
-    `<div class="modal-eyebrow">A GUIDE TO THE UNDERWORLD</div><h2 class="modal-title">Make every life count.</h2><div class="help-grid"><div><b>W A S D / Arrow keys</b><br>Move relative to your screen.<br><b>Mouse</b> aim · <b>Hold left click</b> attack.<br><b>Space</b> dash through danger.</div><div><b>Q / W / E / R</b> cast abilities.<br><b>W is movement</b> — use <b>1 / 2 / 3 / 4</b> for all abilities, or <b>Shift + W</b> for W.<br><b>Esc / P</b> pause.</div><div><b>Read the battlefield</b><br>Red circles warn of incoming attacks. Dash grants brief invulnerability. Keep moving and use your whole kit.</div><div><b>Build your legend</b><br>Clear eight chambers, choose a boon after each, and defeat two guardians. Walk into the north portal to advance. Embers persist after death.</div></div><p class="modal-desc">Desktop keyboard and mouse required. Progress is saved locally in this browser.<br>Ahri heals every third kill. Yasuo builds a shield by moving. Jinx gains speed on takedown.</p><button id="close-help" class="primary">UNDERSTOOD</button>`,
+    `<div class="modal-eyebrow">A GUIDE TO THE UNDERWORLD</div><h2 class="modal-title">Make every life count.</h2><div class="help-grid"><div><b>W A S D / Ц Ф Ы В</b><br>Physical keys move relative to the camera in any keyboard layout.<br><b>Mouse</b> aim · <b>Hold left click</b> attack.<br><b>Space</b> dash through danger.</div><div><b>1 / 2 / 3 / 4</b> cast abilities (number row or numpad).<br><b>Hold right mouse + drag</b> rotate and tilt the camera.<br><b>Mouse wheel</b> zoom · <b>Esc / P</b> pause.</div><div><b>Read the battlefield</b><br>Red circles warn of incoming attacks. Dash grants brief invulnerability. Keep moving and use your whole kit.</div><div><b>Build your legend</b><br>Clear eight chambers, choose a boon after each, and defeat two guardians. Walk into the north portal to advance. Embers persist after death.</div></div><p class="modal-desc">Desktop keyboard and mouse required. Progress is saved locally in this browser.<br>Ahri heals every third kill. Yasuo builds a shield by moving. Jinx gains speed on takedown.</p><button id="close-help" class="primary">UNDERSTOOD</button>`,
   );
   $("#close-help").onclick = () => {
     hideModal();
@@ -598,7 +605,7 @@ function startRun() {
     CHAMPIONS[selected].skills
       .map(
         (s, i) =>
-          `<div class="ability" title="${s} (${i === 1 ? "2 / Shift+W" : "QWER"[i]})"><span class="symbol">${["◈", "✧", "➶", "✺"][i]}</span><kbd>${i === 1 ? "2 / ⇧W" : "QWER"[i]}</kbd><small>${i + 1}</small><div class="cooldown" hidden></div></div>`,
+          `<div class="ability" title="${s} (${i + 1})"><span class="symbol">${["◈", "✧", "➶", "✺"][i]}</span><kbd>${i + 1}</kbd><div class="cooldown" hidden></div></div>`,
       )
       .join("") +
     `<div class="ability" title="Dash (Space)"><span class="symbol">»</span><kbd>SPACE</kbd><div class="cooldown" hidden></div></div>`;
@@ -1053,17 +1060,17 @@ function dash() {
   tone(230, 0.12, "triangle");
 }
 function moveDirection() {
-  let x =
-      (keys.has("d") || keys.has("arrowright") ? 1 : 0) -
-      (keys.has("a") || keys.has("arrowleft") ? 1 : 0),
-    y =
-      (keys.has("s") || keys.has("arrowdown") ? 1 : 0) -
-      (keys.has("w") || keys.has("arrowup") ? 1 : 0);
-  return new THREE.Vector3(
-    x * 0.707 + y * 0.707,
-    0,
-    -x * 0.707 + y * 0.707,
-  ).normalize();
+  const x =
+    Number(keys.has("KeyD") || keys.has("ArrowRight")) -
+    Number(keys.has("KeyA") || keys.has("ArrowLeft"));
+  const y =
+    Number(keys.has("KeyW") || keys.has("ArrowUp")) -
+    Number(keys.has("KeyS") || keys.has("ArrowDown"));
+  const forward = camera.getWorldDirection(new THREE.Vector3());
+  forward.y = 0;
+  forward.normalize();
+  const right = new THREE.Vector3(-forward.z, 0, forward.x);
+  return right.multiplyScalar(x).addScaledVector(forward, y).normalize();
 }
 function warning(x, z, r, delay, damage, kind = "circle") {
   const m = ring(r, 0xff756e, effects, x, z, 0.09);
@@ -1281,7 +1288,7 @@ function update(dt) {
   rocketMode = Math.max(0, rocketMode - dt);
   foxTime = Math.max(0, foxTime - dt);
   ray.setFromCamera(pointer, camera);
-  if (ray.ray.intersectPlane(plane, mouseWorld)) {
+  if (!cameraDragging && ray.ray.intersectPlane(plane, mouseWorld)) {
     aim.copy(mouseWorld).sub(hero.position);
     aim.y = 0;
     if (aim.length() > 0.1) aim.normalize();
@@ -1500,7 +1507,15 @@ function animate(now) {
     pos = new THREE.Vector3(22, 23, 26);
   } else {
     target = new THREE.Vector3(hero.position.x * 0.2, 0, hero.position.z * 0.2);
-    pos = target.clone().add(new THREE.Vector3(21, 27, 23));
+    pos = target
+      .clone()
+      .add(
+        new THREE.Vector3(
+          Math.sin(cameraYaw) * Math.cos(cameraPitch) * cameraDistance,
+          Math.sin(cameraPitch) * cameraDistance,
+          Math.cos(cameraYaw) * Math.cos(cameraPitch) * cameraDistance,
+        ),
+      );
   }
   camera.position.lerp(pos, 1 - Math.exp(-dt * 3));
   camera.lookAt(target);
@@ -1520,42 +1535,90 @@ addEventListener("resize", resize);
 resize();
 requestAnimationFrame(animate);
 addEventListener("mousemove", (e) => {
+  if (cameraDragging && state === "playing") {
+    cameraYaw -= (e.clientX - dragX) * 0.006;
+    cameraPitch = THREE.MathUtils.clamp(
+      cameraPitch + (e.clientY - dragY) * 0.004,
+      0.45,
+      1.15,
+    );
+    dragX = e.clientX;
+    dragY = e.clientY;
+  }
   pointer.set(
     (e.clientX / innerWidth) * 2 - 1,
     (-e.clientY / innerHeight) * 2 + 1,
   );
 });
 $("#world").addEventListener("mousedown", (e) => {
-  if (e.button === 0 && state === "playing") {
+  if (state !== "playing") return;
+  if (e.button === 0) {
     mouseDown = true;
     tone(500, 0.01);
+  } else if (e.button === 2) {
+    e.preventDefault();
+    cameraDragging = true;
+    dragX = e.clientX;
+    dragY = e.clientY;
   }
 });
-addEventListener("mouseup", () => (mouseDown = false));
+addEventListener("mouseup", (e) => {
+  if (e.button === 0) mouseDown = false;
+  if (e.button === 2) cameraDragging = false;
+});
+$("#world").addEventListener(
+  "wheel",
+  (e) => {
+    if (state !== "playing") return;
+    e.preventDefault();
+    cameraDistance = THREE.MathUtils.clamp(
+      cameraDistance + Math.sign(e.deltaY) * 2,
+      25,
+      55,
+    );
+  },
+  { passive: false },
+);
 addEventListener("contextmenu", (e) => e.preventDefault());
 addEventListener("keydown", (e) => {
-  const k = e.key.toLowerCase();
-  if ([" ", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k))
-    e.preventDefault();
-  if (k === "escape" || k === "p") {
+  const code = e.code;
+  if (code === "Escape" || code === "KeyP") {
     if (!e.repeat) pause();
     return;
   }
   if (state !== "playing") return;
-  if (k === "w" && e.shiftKey) {
-    if (!e.repeat) cast(1);
+  if (
+    [
+      "KeyW",
+      "KeyA",
+      "KeyS",
+      "KeyD",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+    ].includes(code)
+  ) {
+    e.preventDefault();
+    keys.add(code);
     return;
   }
-  keys.add(k);
-  if (e.repeat) return;
-  if (k === " ") dash();
-  const i = { q: 0, e: 2, r: 3, 1: 0, 2: 1, 3: 2, 4: 3 }[k];
-  if (i !== undefined) cast(i);
+  if (code === "Space") {
+    e.preventDefault();
+    if (!e.repeat) dash();
+    return;
+  }
+  const match = /^(?:Digit|Numpad)([1-4])$/.exec(code);
+  if (match) {
+    e.preventDefault();
+    if (!e.repeat) cast(Number(match[1]) - 1);
+  }
 });
-addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
+addEventListener("keyup", (e) => keys.delete(e.code));
 addEventListener("blur", () => {
   keys.clear();
   mouseDown = false;
+  cameraDragging = false;
   if (state === "playing") pause();
 });
 document.addEventListener("visibilitychange", () => {
@@ -1581,6 +1644,12 @@ window.__HADES__ = {
     kills: killCount,
     shots: shots.length,
     position: hero.position.toArray(),
+    camera: {
+      yaw: cameraYaw,
+      pitch: cameraPitch,
+      distance: cameraDistance,
+      dragging: cameraDragging,
+    },
     cooldowns: player?.cooldowns,
     renderer: renderer.info.render,
   }),
@@ -1602,7 +1671,8 @@ if (import.meta.env.DEV && new URLSearchParams(location.search).has("test")) {
       const v = new THREE.Vector3(x, 0, z).project(camera);
       pointer.set(v.x, v.y);
       keys.clear();
-      for (const k of moveKeys) keys.add(k);
+      for (const k of moveKeys)
+        keys.add(k.length === 1 ? `Key${k.toUpperCase()}` : k);
       mouseDown = attack;
     },
     cast,

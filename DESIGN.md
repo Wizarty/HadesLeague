@@ -16,7 +16,7 @@ All numeric tuning, geometry, animation, AI, encounters, and implementation in t
 ## Systems
 
 - **State flow:** title → champion selection → combat → blessing → portal → next chamber → victory/defeat → selection. Pause freezes combat; losing focus pauses automatically.
-- **Combat:** mouse-to-ground raycast aiming; screen-relative movement; cooldown-gated attacks; dash invulnerability; critical hits; armor; projectile collision, piercing, returning and homing; area damage and stuns. W ability has alternate bindings to preserve WASD.
+- **Combat:** mouse-to-ground raycast aiming; screen-relative movement; cooldown-gated attacks; dash invulnerability; critical hits; armor; projectile collision, piercing, returning and homing; area damage and stuns. Movement uses physical WASD key codes across keyboard layouts; abilities use number-row/numpad 1–4. Right-mouse dragging orbits/tilts the camera, the wheel zooms, and movement follows the current camera orientation.
 - **Champions:** three complete adapted passive/Q/W/E/R kits. Each starts fully equipped. Soul rank adds five maximum health per rank, capped at ten ranks.
 - **Enemy AI:** pursuing wraiths, slow heavy attackers, distance-keeping archers, and telegraphed chargers. Guardians mix targeted ground attacks, radial projectiles, and close-range slams, gain speed below half health, and summon adds.
 - **Campaign:** eight chambers, guardians at four/eight; procedurally selected enemy compositions, spawn angles, cover positions, and upgrade choices. Shared arena shell with two visual biomes. Enemy count and health scale with chamber; damage and environmental hazards escalate.

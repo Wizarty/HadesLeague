@@ -43,13 +43,13 @@ try {
   await page.keyboard.up("a");
   const after = await page.evaluate(() => window.__HADES__.snapshot());
   assert.notDeepEqual(before.position, after.position);
-  await page.keyboard.press("q");
+  await page.keyboard.press("1");
   assert.ok(
     (await page.evaluate(() => window.__HADES__.snapshot())).cooldowns[0] > 0,
   );
   await page.keyboard.press("2");
-  await page.keyboard.press("e");
-  await page.keyboard.press("r");
+  await page.keyboard.press("3");
+  await page.keyboard.press("4");
   await page.keyboard.press("Space");
   await page.screenshot({ path: "/tmp/hades-combat.png" });
   await page.keyboard.press("Escape");

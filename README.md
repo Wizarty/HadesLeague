@@ -24,15 +24,19 @@ The `dist/` directory can be served by any static web host. All geometry, fonts,
 
 | Input | Action |
 | --- | --- |
-| WASD / arrows | Screen-relative movement |
+| WASD / ЦФЫВ (physical keys; any layout) | Camera-relative movement |
 | Mouse | Aim |
+| Hold right mouse + drag | Rotate / tilt camera |
+| Mouse wheel | Zoom |
 | Hold left mouse | Basic attack |
 | Space | Invulnerable dash |
-| Q / 1 | Q ability |
-| Shift+W / 2 | W ability (plain W moves) |
-| E / 3 | E ability |
-| R / 4 | Ultimate |
+| 1 | Q ability |
+| 2 | W ability |
+| 3 | E ability |
+| 4 | Ultimate |
 | Esc / P | Pause / resume |
+
+Abilities also accept numpad 1–4. Bindings use physical keyboard codes, so changing language or holding Shift does not change movement or ability keys. Movement follows the camera after rotation.
 
 Clear a chamber, select a blessing, then walk into the glowing gate at the north edge. Red circles mark attacks before they land. Obelisks block movement and ordinary projectiles; piercing abilities pass through. Cinder chambers also erupt beneath your feet. Health partially recovers between chambers. Embers awarded at the end of a run purchase permanent starting health on the champion selection screen.
 
@@ -51,9 +55,10 @@ npm test
 # With npm run dev already running, and system Chromium installed:
 npm run test:browser
 npm run test:campaign
+npm run test:controls
 ```
 
-Browser tests use `/usr/bin/chromium`; set `CHROMIUM_PATH` to override. Smoke tests check actual WebGL startup, movement, every champion's abilities, dash input, pause, defeat, and save persistence. Campaign testing accelerates the actual game update loop with input-driven combat, upgrade selection, and portal navigation. The automation API exists only in Vite development mode with `?test=1`; it is absent from production builds. Automated combat is evidence of functional completion, not a substitute for broad human balance or hardware testing.
+Browser tests use `/usr/bin/chromium`; set `CHROMIUM_PATH` to override. Smoke tests check actual WebGL startup, movement, every champion's abilities, dash input, pause, defeat, and save persistence. Campaign testing accelerates the actual game update loop with input-driven combat, upgrade selection, and portal navigation. The automation API exists only in Vite development mode with `?test=1`; it is absent from production builds. Control regressions also check Russian key values, release after a layout change, shifted digits, numpad keys, mouse orbit/zoom, and movement after camera rotation. Automated combat is evidence of functional completion, not a substitute for broad human balance or hardware testing.
 
 Progress is stored under `hades-league-save` in browser localStorage. Clearing site storage resets it. Runs themselves are not resumed after a reload. Touch-only play, gamepads, multiplayer, and a narrative campaign are outside this release.
 
