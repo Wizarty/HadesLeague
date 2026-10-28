@@ -62,3 +62,21 @@ Progress is stored under `hades-league-save` in browser localStorage. Clearing s
 See [DESIGN.md](DESIGN.md) for systems, reference boundaries, and asset provenance. The scene uses original procedural low-poly meshes, animated transforms, particles, synthesized sound, and locally bundled open-source fonts. Static meshes are batched by material; effects expire and release their geometry/material resources. Device pixel ratio is capped at 1.75.
 
 This is an independent fan project, unaffiliated with Riot Games or Supergiant Games. Champion names and ability identities belong to their respective owners. No commercial-game code, models, textures, audio, or animations were extracted or included.
+
+## GitHub Pages
+
+The repository root contains a ready-to-serve production build: `index.html`,
+`site-assets/`, and `.nojekyll`. GitHub Pages can publish **main / (root)** directly;
+no Node.js runtime, Jekyll transformation, or Actions deployment is required on the host.
+Relative asset URLs support the `/HadesLeague/` project path and custom domains.
+
+Edit `app/index.html` and `src/` for development. Root `index.html` and `site-assets/`
+are generated files. After source changes, regenerate them before committing:
+
+```sh
+npm ci
+npm run build:pages
+```
+
+Commit the updated generated files together with the source. `npm run dev` and
+`npm run preview` continue to work from the repository directory as before.

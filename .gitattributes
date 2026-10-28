@@ -1,0 +1,2 @@
+# Generated bundles contain upstream shader strings; review source files instead.
+site-assets/** linguist-generated=true -diff

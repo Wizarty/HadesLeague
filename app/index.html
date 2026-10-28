@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#101827" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23101e2b'/%3E%3Cpath d='M32 8L52 32 32 56 12 32Z' fill='none' stroke='%23d5b675' stroke-width='3'/%3E%3C/svg%3E"
+    />
+    <title>Hades League — Echoes of the Rift</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world" aria-label="Isometric combat arena"></canvas>
+      <div class="vignette"></div>
+      <header>
+        <a class="brand" href="#" aria-label="Hades League home"
+          ><span class="brand-mark">♜</span> HADES<span>LEAGUE</span></a
+        >
+        <div class="chapter">
+          A ROGUELIKE ODYSSEY <i></i> ECHOES OF THE RIFT
+        </div>
+        <button id="sound" class="icon-button" aria-label="Toggle sound">
+          ♫
+        </button>
+      </header>
+      <div id="hud" hidden>
+        <div class="player-panel">
+          <div id="portrait" class="portrait">A</div>
+          <div>
+            <div class="player-title">
+              <b id="champ-name">AHRI</b><span id="level">LV. 1</span>
+            </div>
+            <div class="health-track"><div id="health"></div></div>
+            <div class="health-label">
+              <span id="hp-text"></span><span id="passive"></span>
+            </div>
+          </div>
+        </div>
+        <div class="room-panel">
+          <span id="biome">THE FORGOTTEN GARDENS</span
+          ><strong id="room">CHAMBER I</strong>
+          <div id="room-dots"></div>
+        </div>
+        <div class="run-stats">
+          <span>✦ <b id="gold">0</b></span
+          ><span id="timer">00:00</span
+          ><button id="pause" class="icon-button" aria-label="Pause">II</button>
+        </div>
+        <div id="boss-hud" hidden>
+          <span id="boss-name"></span>
+          <div><i id="boss-health"></i></div>
+        </div>
+        <div id="objective"></div>
+        <div id="abilities"></div>
+        <div class="bottom-hint">
+          W A S D <span>move</span> · MOUSE <span>aim</span> · CLICK
+          <span>attack</span> · SPACE <span>dash</span> · ESC <span>pause</span>
+        </div>
+        <div id="buffs"></div>
+      </div>
+      <div id="toast" role="status"></div>
+      <div id="floaters"></div>
+      <section id="menu" class="screen">
+        <div class="menu-copy">
+          <div class="eyebrow"><span></span> DEATH IS ONLY THE BEGINNING</div>
+          <h1>ECHOES<br />OF THE <em>RIFT</em></h1>
+          <p>
+            Legends fall. Champions rise.<br />Descend into a realm that
+            remembers every battle.
+          </p>
+          <div class="menu-actions">
+            <button id="play" class="primary">
+              BEGIN YOUR DESCENT <span>›</span></button
+            ><button id="how" class="text-button">
+              HOW TO PLAY <span>→</span>
+            </button>
+          </div>
+          <div class="menu-meta">
+            <span>01 — THE FORGOTTEN GARDENS</span
+            ><span>∞ POSSIBLE BUILDS</span>
+          </div>
+        </div>
+        <div class="scene-label">
+          <span>THE VEIL IS THIN</span>
+          <div>Something stirs<br />beneath the surface.</div>
+          <i></i>
+        </div>
+        <footer>
+          <span>AN ORIGINAL FAN-MADE ADVENTURE</span
+          ><span>THREE CHAMPIONS. ONE ENDLESS LEGEND.</span><span>v1.0</span>
+        </footer>
+      </section>
+      <section id="modal" class="overlay" hidden>
+        <div id="modal-content"></div>
+      </section>
+      <div id="error" hidden></div>
+    </div>
+    <script type="module" src="../src/main.js"></script>
+  </body>
+</html>
