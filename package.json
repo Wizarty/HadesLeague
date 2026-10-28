@@ -1,0 +1,25 @@
+{
+  "name": "hades-league",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node tests/core.test.js",
+    "test:browser": "node tests/smoke.mjs",
+    "test:campaign": "node tests/campaign.mjs",
+    "format": "prettier --write src tests index.html vite.config.js"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.2.8",
+    "@fontsource/inter": "^5.2.8",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "prettier": "^3.6.2",
+    "vite": "6.3.6"
+  }
+}
